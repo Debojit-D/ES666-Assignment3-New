@@ -29,7 +29,7 @@ for idx,algo in enumerate(all_submissions):
         Flags = {'I1': 0, 'I2': 1, 'I3': 1, 'I4': 0, 'I5': 0, 'I6' : 1}
         for impaths in glob.glob(path):
             print('\t\t Processing... {}'.format(impaths))
-            stitched_image, homography_matrix_list = inst.make_panaroma_for_images_in(path=impaths, focal_length=focal_lengths[impaths[-2:]], flag=Flags[impaths[-2:]])
+            stitched_image, homography_matrix_list = inst.make_panaroma_for_images_in(path=impaths, focal_length=focal_lengths[impaths[-2:]], Flag=Flags[impaths[-2:]])
 
             outfile =  './results/{}/{}.png'.format(impaths.split(os.sep)[-1],spec.name)
             os.makedirs(os.path.dirname(outfile),exist_ok=True)
