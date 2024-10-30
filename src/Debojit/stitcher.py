@@ -294,7 +294,7 @@ if __name__ == "__main__":
     if not image_files:
         raise ValueError("No images found in the specified directory. Check the path and try again.")
 
-    stitcher = PanoramaStitcher(image_files, focal_length=700, Flag=True)  # Adjust focal length if necessary
+    stitcher = PanaromaStitcher(image_files, focal_length=700, Flag=True)  # Adjust focal length if necessary
     final_panorama, homography_matrix_list = stitcher.stitch_images()
     plt.imshow(cv2.cvtColor(final_panorama, cv2.COLOR_BGR2RGB))
     plt.axis('off')
