@@ -5,7 +5,7 @@ from tqdm import tqdm
 import glob
 from PIL import Image
 
-class PanoramaStitcher:
+class PanaromaStitcher:
     def __init__(self, image_files, focal_length=800, Flag = False):
         self.focal_length = focal_length
         if Flag == True:
