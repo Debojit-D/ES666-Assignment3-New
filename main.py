@@ -1,44 +1,62 @@
 import pdb
-import src
 import glob
-import importlib
+import importlib.util
 import os
 import cv2
 
+# Define the absolute path to the Images directory
+base_dir = os.getcwd()
+image_dir = os.path.join(base_dir, 'Images')
+path = os.path.join(image_dir, '*')
 
+# List all subdirectories in the src directory
+all_submissions = glob.glob(os.path.join(base_dir, 'src', '*'))
+os.makedirs(os.path.join(base_dir, 'results'), exist_ok=True)
 
-### Change path to images here
-path = 'Images{}*'.format(os.sep)  # Use os.sep, Windows, linux have different path delimiters
-###
-
-all_submissions = glob.glob('./src/*')
-os.makedirs('./results/', exist_ok=True)
-for idx,algo in enumerate(all_submissions):
-    print('****************\tRunning Awesome Stitcher developed by: {}  | {} of {}\t********************'.format(algo.split(os.sep)[-1],idx,len(all_submissions)))
+for idx, algo in enumerate(all_submissions):
+    algo_name = os.path.basename(algo)
+    print(f"**************** Running Awesome Stitcher developed by: {algo_name} | {idx + 1} of {len(all_submissions)} ********************")
+    
     try:
-        module_name = '{}_{}'.format(algo.split(os.sep)[-1],'stitcher')
-        filepath = '{}{}stitcher.py'.format( algo,os.sep,'stitcher.py')
+        # Prepare module name and path to the stitcher.py file
+        module_name = f"{algo_name}_stitcher"
+        filepath = os.path.join(algo, 'stitcher.py')
+        
+        # Load the module
         spec = importlib.util.spec_from_file_location(module_name, filepath)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-
-        ###
-        focal_lengths ={'I1': None, 'I2': 800, 'I3': 650, 'I4': None, 'I5': None, 'I6' : 700}
-        Flags = {'I1': 0, 'I2': 1, 'I3': 1, 'I4': 0, 'I5': 0, 'I6' : 1}
+        
+        # Define focal lengths and flags based on image folder names
+        focal_lengths = {'I1': None, 'I2': 800, 'I3': 650, 'I4': None, 'I5': None, 'I6': 700}
+        Flags = {'I1': 0, 'I2': 1, 'I3': 1, 'I4': 0, 'I5': 0, 'I6': 1}
+        
         for impaths in glob.glob(path):
             PanaromaStitcher = getattr(module, 'PanaromaStitcher')
-            image_files = glob.glob(impaths + os.sep + '*')
-            inst = PanaromaStitcher(image_files=image_files, focal_length=focal_lengths[impaths[-2:]], Flag=Flags[impaths[-2:]])
-            print('\t\t Processing... {}'.format(impaths))
+            
+            # Collect images from the specified path
+            image_files = glob.glob(os.path.join(impaths, '*'))
+            img_key = os.path.basename(impaths)
+            
+            # Initialize PanaromaStitcher with the correct focal length and flag
+            inst = PanaromaStitcher(
+                image_files=image_files,
+                focal_length=focal_lengths.get(img_key, None),
+                Flag=Flags.get(img_key, 0)
+            )
+            print(f"\t\t Processing... {impaths}")
+            
+            # Perform stitching
             stitched_image, homography_matrix_list = inst.stitch_images()
-
-            outfile =  './results/{}/{}.png'.format(impaths.split(os.sep)[-1],spec.name)
-            os.makedirs(os.path.dirname(outfile),exist_ok=True)
-            cv2.imwrite(outfile,stitched_image)
+            
+            # Save the stitched image in the results directory
+            result_folder = os.path.join(base_dir, 'results', img_key)
+            os.makedirs(result_folder, exist_ok=True)
+            outfile = os.path.join(result_folder, f'{module_name}.png')
+            
+            cv2.imwrite(outfile, stitched_image)
             print(homography_matrix_list)
-            print('Panaroma saved ... @ ./results/{}.png'.format(spec.name))
-            print('\n\n')
-
+            print(f'Panorama saved at: {outfile}\n\n')
+            
     except Exception as e:
-        print('Oh No! My implementation encountered this issue\n\t{}'.format(e))
-        print('\n\n')
+        print(f"Oh No! My implementation encountered this issue\n\t{e}\n\n")
