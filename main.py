@@ -27,7 +27,8 @@ for idx,algo in enumerate(all_submissions):
         Flags = {'I1': 0, 'I2': 1, 'I3': 1, 'I4': 0, 'I5': 0, 'I6' : 1}
         for impaths in glob.glob(path):
             PanaromaStitcher = getattr(module, 'PanaromaStitcher')
-            inst = PanaromaStitcher(image_files=impaths, focal_length=focal_lengths[impaths[-2:]], Flag=Flags[impaths[-2:]])
+            image_files = glob.glob(impaths + os.sep + '*')
+            inst = PanaromaStitcher(image_files=image_files, focal_length=focal_lengths[impaths[-2:]], Flag=Flags[impaths[-2:]])
             print('\t\t Processing... {}'.format(impaths))
             stitched_image, homography_matrix_list = inst.stitch_images()
 
