@@ -307,3 +307,9 @@ if __name__ == "__main__":
     plt.show()
     plt.imsave('Processed_I6.jpg', cv2.cvtColor(final_panorama, cv2.COLOR_BGR2RGB))
     print(homography_matrix_list)
+
+#References :-
+# CV2 Sift Features: https://docs.opencv.org/4.x/da/df5/tutorial_py_sift_intro.html
+# Cylindrical Warp:  https://courses.cs.washington.edu/courses/cse576/08sp/lectures/Stitching.pdf, https://youtu.be/taty6lPVcmA?si=DVuhGKr-9DYet8gi&t=3557
+# Generating Masks: https://github.com/CorentinBrtx/image-stitching/tree/main
+# First Principles of Computer Vision: Image Stitching Playlist
