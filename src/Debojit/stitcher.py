@@ -182,13 +182,15 @@ class PanaromaStitcher:
         warped_mask1 = cv2.warpPerspective(img_mask, adjusted_H, (width, height))
         warped_mask2 = cv2.warpPerspective(mask, translation_matrix, (width, height))
         # Normalize the masks
-        combined_mask = warped_mask1 + warped_mask2
+        combined_mask = warped_mask1 + warped_mask2 + 1e-8
         normalized_mask1 = np.divide(warped_mask1, combined_mask, where=combined_mask > 0)
         normalized_mask2 = np.divide(warped_mask2, combined_mask, where=combined_mask > 0)
 
         # Blend images with masks
         blended = (warped_img * normalized_mask1[:, :, None] + warped_base * normalized_mask2[:, :, None]).astype(np.uint8)
 
+        blended = np.clip(blended, 0, 255).astype(np.uint8)
+        
         return blended, combined_mask/combined_mask.max()
 
     def right_apply_homography(self, img, H, base_img, img_mask):
@@ -221,13 +223,15 @@ class PanaromaStitcher:
         warped_mask1 = cv2.warpPerspective(img_mask, adjusted_H, (width, height))
         warped_mask2 = cv2.warpPerspective(mask, translation_matrix, (width, height))
         # Normalize the masks
-        combined_mask = warped_mask1 + warped_mask2
+        combined_mask = warped_mask1 + warped_mask2 + 1e-8
         normalized_mask1 = np.divide(warped_mask1, combined_mask, where=combined_mask > 0)
         normalized_mask2 = np.divide(warped_mask2, combined_mask, where=combined_mask > 0)
 
         # Blend images with masks
         blended = (warped_img * normalized_mask1[:, :, None] + warped_base * normalized_mask2[:, :, None]).astype(np.uint8)
 
+        blended = np.clip(blended, 0, 255).astype(np.uint8)
+        
         return blended, combined_mask/combined_mask.max()
 
     def combined_apply_homography(self, right_panorama, left_panorama, final_H, mask_right, mask_left):
@@ -264,13 +268,15 @@ class PanaromaStitcher:
         warped_mask2 = cv2.warpPerspective(mask_right, adjusted_H_right, (width, height))
         
         # Normalize the masks
-        combined_mask = warped_mask1 + warped_mask2
+        combined_mask = warped_mask1 + warped_mask2 + 1e-8
         normalized_mask1 = np.divide(warped_mask1, combined_mask, where=combined_mask > 0)
         normalized_mask2 = np.divide(warped_mask2, combined_mask, where=combined_mask > 0)
         
         # Blend images with masks
         blended = (warped_left * normalized_mask1[:, :, None] + warped_right * normalized_mask2[:, :, None]).astype(np.uint8)
 
+        blended = np.clip(blended, 0, 255).astype(np.uint8)
+        
         return blended, combined_mask/combined_mask.max()
 
 
